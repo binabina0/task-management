@@ -15,10 +15,10 @@ import lombok.*;
 @Builder
 public class UserEntity extends BaseEntity {
     @Column(nullable = false, unique = true)
-    String email;
+    private String email;
     @Column(nullable = false)
-    String password;
+    private String password;
     @Column(nullable = false)
-    String name;
+    private String name;
 
 }

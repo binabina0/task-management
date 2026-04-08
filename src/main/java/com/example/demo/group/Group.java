@@ -17,6 +17,6 @@ public class Group extends BaseEntity {
     private String name;
     private String description;
     @ManyToOne
-    @JoinColumn(name = "crated_by")
+    @JoinColumn(name = "created_by")
     private UserEntity createdBy;
 }
