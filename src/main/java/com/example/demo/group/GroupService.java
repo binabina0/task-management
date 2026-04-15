@@ -1,5 +1,7 @@
 package com.example.demo.group;
 
+import com.example.demo.group.dto.GroupRequest;
+import com.example.demo.group.dto.GroupResponse;
 import com.example.demo.user.UserEntity;
 import com.example.demo.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +15,18 @@ public class GroupService {
     private final UserService userService;
     private final GroupRepository groupRepository;
 
-    public Group createGroup(String name, String description, UUID userID) {
-        UserEntity user = userService.getBYId(userID);
+    public GroupResponse createGroup(GroupRequest request) {
+        UserEntity user = userService.getBYId(request.getUserId());
         Group group = Group.builder()
-                .name(name)
-                .description(description)
+                .name(request.getName())
+                .description(request.getDescription())
                 .createdBy(user)
                 .build();
-        return groupRepository.save(group);
+        Group saved = groupRepository.save(group);
+        return GroupResponse.builder()
+                .id(saved.getId())
+                .name(saved.getName())
+                .description(saved.getName())
+                .build();
     }
 }

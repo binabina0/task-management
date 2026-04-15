@@ -1,10 +1,9 @@
 package com.example.demo.group;
 
+import com.example.demo.group.dto.GroupRequest;
+import com.example.demo.group.dto.GroupResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -15,9 +14,7 @@ public class GroupController {
     private final GroupService groupService;
 
     @PostMapping
-    public Group createGroup(@RequestParam String name,
-                             @RequestParam String description,
-                             @RequestParam UUID userId){
-        return groupService.createGroup(name, description, userId);
+    public GroupResponse createGroup(@RequestBody GroupRequest request) {
+        return groupService.createGroup(request);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.demo.user;
 
 
+import com.example.demo.user.dto.UserRequest;
+import com.example.demo.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +13,18 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
 
-    public UserEntity createUser(String email, String password, String name) {
+    public UserResponse createUser(UserRequest request) {
         UserEntity user = UserEntity.builder()
-                .email(email)
-                .password(password)
-                .name(name)
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .name(request.getName())
                 .build();
-        return userRepository.save(user);
+        UserEntity saved =  userRepository.save(user);
+        return UserResponse.builder()
+                .id(saved.getId())
+                .email(saved.getEmail())
+                .name(saved.getName())
+                .build();
 
     }
 
