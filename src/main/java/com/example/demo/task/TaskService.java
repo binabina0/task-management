@@ -52,4 +52,10 @@ public class TaskService {
                         .build())
                 .toList();
     }
+
+    public void updateStatus(UUID taskId, TaskStatus status) {
+        Task task = taskRepository.findById(taskId).orElseThrow();
+        task.setStatus(status);
+        taskRepository.save(task);
+    }
 }

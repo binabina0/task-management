@@ -22,4 +22,8 @@ public class TaskController {
     public List<TaskResponse> getUserTasks(@PathVariable("userId") UUID userId) {
         return taskService.getTaskByUser(userId);
     }
+    @PatchMapping("/{taskId}/status")
+    public void updateStatus(@PathVariable UUID taskId, @RequestParam TaskStatus status) {
+        taskService.updateStatus(taskId, status);
+    }
 }
