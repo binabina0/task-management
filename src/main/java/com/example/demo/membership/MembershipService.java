@@ -1,5 +1,6 @@
 package com.example.demo.membership;
 
+import com.example.demo.common.exception.ForbiddenException;
 import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
@@ -38,7 +39,7 @@ public class MembershipService {
                 .findByUserIdAndGroupId(userId, groupId)
                 .orElseThrow(() -> new NotFoundException("Not a member of this group"));
         if(membership.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
     }
     public void checkMember(UUID groupId) {
