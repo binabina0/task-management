@@ -38,7 +38,7 @@ public class GroupService {
         return GroupResponse.builder()
                 .id(saved.getId())
                 .name(saved.getName())
-                .description(saved.getName())
+                .description(saved.getDescription())
                 .build();
     }
 }

@@ -14,9 +14,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Membership extends BaseEntity {
-     @ManyToOne
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
     @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
     private Group group;
     @Enumerated(EnumType.STRING)
     private Role role;
