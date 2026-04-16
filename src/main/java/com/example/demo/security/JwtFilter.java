@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class JwtFilter extends GenericFilter {
             String token = header.substring(7);
             if (jwtService.isValid(token)) {
                 UUID userId = jwtService.extractUserId(token);
-                UserEntity user = userRepository.findById(userId).orElseThrow();
+                UserEntity user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
                                 user,

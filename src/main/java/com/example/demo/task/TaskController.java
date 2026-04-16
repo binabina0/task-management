@@ -2,6 +2,7 @@ package com.example.demo.task;
 
 import com.example.demo.task.dto.TaskRequest;
 import com.example.demo.task.dto.TaskResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public TaskResponse createTask(@RequestBody TaskRequest request) {
+    public TaskResponse createTask(@Valid @RequestBody TaskRequest request) {
         return taskService.createTask(request);
     }
     @GetMapping("/user/{userId}")

@@ -1,6 +1,8 @@
 package com.example.demo.user;
 
 
+import com.example.demo.common.exception.BadRequestException;
+import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.user.dto.UserRequest;
 import com.example.demo.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserRequest request) {
+        if(userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BadRequestException("Email already exists");
+        }
         UserEntity user = UserEntity.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -32,6 +37,6 @@ public class UserService {
 
     public UserEntity getBYId(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 }

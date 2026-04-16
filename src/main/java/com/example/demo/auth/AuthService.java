@@ -1,10 +1,13 @@
 package com.example.demo.auth;
 
 import com.example.demo.auth.dto.AuthResponse;
+import com.example.demo.common.exception.BadRequestException;
+import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.security.JwtService;
 import com.example.demo.user.UserEntity;
 import com.example.demo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +20,9 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException("User not found"));
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new BadRequestException("Invalid credentials");
         }
         String token = jwtService.generateToken(user.getId());
         return AuthResponse.builder()

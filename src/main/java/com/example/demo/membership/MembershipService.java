@@ -1,5 +1,6 @@
 package com.example.demo.membership;
 
+import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
 import com.example.demo.user.UserEntity;
@@ -21,9 +22,9 @@ public class MembershipService {
     public Membership addMember(UUID userId, UUID groupId, Role role) {
         checkAdmin(groupId);
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException("User not found"));
         Group group = groupRepository.findById(groupId)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException("Group not found"));
         Membership membership = Membership.builder()
                 . user(user)
                 .group(group)
@@ -35,7 +36,7 @@ public class MembershipService {
         UUID userId = getCurrentUser().getId();
         Membership membership = membershipRepository
                 .findByUserIdAndGroupId(userId, groupId)
-                .orElseThrow(() -> new RuntimeException("Not a member of this group"));
+                .orElseThrow(() -> new NotFoundException("Not a member of this group"));
         if(membership.getRole() != Role.ADMIN) {
             throw new RuntimeException("Access denied");
         }
@@ -44,13 +45,13 @@ public class MembershipService {
         UUID userId = getCurrentUser().getId();
         membershipRepository
                 .findByUserIdAndGroupId(userId, groupId)
-                .orElseThrow(() -> new RuntimeException("Not a member of this group"));
+                .orElseThrow(() -> new NotFoundException("Not a member of this group"));
     }
     public void changeRole(UUID targetUser, UUID groupId, Role newRole) {
         checkAdmin(groupId);
         Membership membership = membershipRepository
                 .findByUserIdAndGroupId(targetUser,groupId)
-                .orElseThrow(() -> new RuntimeException("Not a member of this group"));
+                .orElseThrow(() -> new NotFoundException("Not a member of this group"));
         membership.setRole(newRole);
         membershipRepository.save(membership);
     }

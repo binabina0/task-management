@@ -1,5 +1,6 @@
 package com.example.demo.task;
 
+import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
 import com.example.demo.membership.MembershipService;
@@ -25,9 +26,9 @@ public class TaskService {
 
     public TaskResponse createTask(TaskRequest request) {
         membershipService.checkMember(request.getGroupId());
-        UserEntity user = userRepository.findById(request.getAssignedToId()).orElseThrow();
+        UserEntity user = userRepository.findById(request.getAssignedToId()).orElseThrow(() -> new NotFoundException("User not found"));
         UserEntity currentUser = getCurrentUser();
-        Group group = groupRepository.findById(request.getGroupId()).orElseThrow();
+        Group group = groupRepository.findById(request.getGroupId()).orElseThrow(() -> new NotFoundException("Group not found"));
         Task task = Task.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -59,7 +60,7 @@ public class TaskService {
     }
 
     public void updateStatus(UUID taskId, TaskStatus status) {
-        Task task = taskRepository.findById(taskId).orElseThrow();
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
         task.setStatus(status);
         taskRepository.save(task);
     }
