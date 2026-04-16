@@ -2,6 +2,9 @@ package com.example.demo.group;
 
 import com.example.demo.group.dto.GroupRequest;
 import com.example.demo.group.dto.GroupResponse;
+import com.example.demo.membership.Membership;
+import com.example.demo.membership.MembershipRepository;
+import com.example.demo.membership.Role;
 import com.example.demo.user.UserEntity;
 import com.example.demo.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import static com.example.demo.common.SecurityUtil.getCurrentUser;
 public class GroupService {
     private final UserService userService;
     private final GroupRepository groupRepository;
+    private final MembershipRepository membershipRepository;
 
     public GroupResponse createGroup(GroupRequest request) {
         UserEntity currentUser = getCurrentUser();
@@ -25,6 +29,12 @@ public class GroupService {
                 .createdBy(currentUser)
                 .build();
         Group saved = groupRepository.save(group);
+        Membership membership = Membership.builder()
+                .user(currentUser)
+                .group(saved)
+                .role(Role.ADMIN)
+                .build();
+        membershipRepository.save(membership);
         return GroupResponse.builder()
                 .id(saved.getId())
                 .name(saved.getName())

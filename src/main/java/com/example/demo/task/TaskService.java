@@ -2,6 +2,7 @@ package com.example.demo.task;
 
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
+import com.example.demo.membership.MembershipService;
 import com.example.demo.task.dto.TaskRequest;
 import com.example.demo.task.dto.TaskResponse;
 import com.example.demo.user.UserEntity;
@@ -17,11 +18,13 @@ import static com.example.demo.common.SecurityUtil.getCurrentUser;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
+    private final MembershipService membershipService;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final TaskRepository taskRepository;
 
     public TaskResponse createTask(TaskRequest request) {
+        membershipService.checkMember(request.getGroupId());
         UserEntity user = userRepository.findById(request.getAssignedToId()).orElseThrow();
         UserEntity currentUser = getCurrentUser();
         Group group = groupRepository.findById(request.getGroupId()).orElseThrow();
