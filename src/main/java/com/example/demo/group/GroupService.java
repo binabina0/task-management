@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.example.demo.common.SecurityUtil.getCurrentUser;
+
 @Service
 @RequiredArgsConstructor
 public class GroupService {
@@ -16,11 +18,11 @@ public class GroupService {
     private final GroupRepository groupRepository;
 
     public GroupResponse createGroup(GroupRequest request) {
-        UserEntity user = userService.getBYId(request.getUserId());
+        UserEntity currentUser = getCurrentUser();
         Group group = Group.builder()
                 .name(request.getName())
                 .description(request.getDescription())
-                .createdBy(user)
+                .createdBy(currentUser)
                 .build();
         Group saved = groupRepository.save(group);
         return GroupResponse.builder()

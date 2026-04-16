@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.demo.common.SecurityUtil.getCurrentUser;
+
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -21,7 +23,7 @@ public class TaskService {
 
     public TaskResponse createTask(TaskRequest request) {
         UserEntity user = userRepository.findById(request.getAssignedToId()).orElseThrow();
-        UserEntity creator = userRepository.findById(request.getCreatedById()).orElseThrow();
+        UserEntity currentUser = getCurrentUser();
         Group group = groupRepository.findById(request.getGroupId()).orElseThrow();
         Task task = Task.builder()
                 .title(request.getTitle())
@@ -29,7 +31,7 @@ public class TaskService {
                 .status(TaskStatus.TODO)
                 .group(group)
                 .assignedTo(user)
-                .createdBy(creator)
+                .createdBy(currentUser)
                 .build();
         Task saved =  taskRepository.save(task);
         return TaskResponse.builder()
