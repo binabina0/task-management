@@ -1,5 +1,6 @@
 package com.example.demo.user;
 
+import com.example.demo.common.response.ApiResponse;
 import com.example.demo.user.dto.UserRequest;
 import com.example.demo.user.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -15,7 +16,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserResponse createUser(@Valid @RequestBody UserRequest request) {
-        return userService.createUser(request);
+    public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .success(true)
+                .data(userService.createUser(request))
+                .build();
     }
 }

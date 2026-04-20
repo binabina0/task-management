@@ -16,6 +16,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     public UserResponse createUser(UserRequest request) {
         if(userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -27,11 +28,7 @@ public class UserService {
                 .name(request.getName())
                 .build();
         UserEntity saved =  userRepository.save(user);
-        return UserResponse.builder()
-                .id(saved.getId())
-                .email(saved.getEmail())
-                .name(saved.getName())
-                .build();
+        return userMapper.toResponse(saved);
 
     }
 
