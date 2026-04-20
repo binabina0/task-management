@@ -8,7 +8,10 @@ import com.example.demo.task.dto.TaskRequest;
 import com.example.demo.task.dto.TaskResponse;
 import com.example.demo.user.UserEntity;
 import com.example.demo.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +26,9 @@ public class TaskService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
+    @Transactional
     public TaskResponse createTask(TaskRequest request) {
         membershipService.checkMember(request.getGroupId());
         UserEntity user = userRepository.findById(request.getAssignedToId()).orElseThrow(() -> new NotFoundException("User not found"));
@@ -38,30 +43,27 @@ public class TaskService {
                 .createdBy(currentUser)
                 .build();
         Task saved =  taskRepository.save(task);
-        return TaskResponse.builder()
-                .id(saved.getId())
-                .title(saved.getTitle())
-                .status(saved.getStatus().name())
-                .assignedToName(user.getName())
-                .build();
+        return taskMapper.toResponse(saved);
 
     }
 
     public List<TaskResponse> getTaskByUser(UUID userId) {
         return taskRepository.findByAssignedToId(userId)
                 .stream()
-                .map(task -> TaskResponse.builder()
-                        .id(task.getId())
-                        .title(task.getTitle())
-                        .status(task.getStatus().name())
-                        .assignedToName(task.getAssignedTo().getName())
-                        .build())
+                .map(taskMapper :: toResponse)
                 .toList();
     }
 
+    @Transactional
     public void updateStatus(UUID taskId, TaskStatus status) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
         task.setStatus(status);
         taskRepository.save(task);
+    }
+
+    public Page<TaskResponse> getTasks(int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size);
+        return taskRepository.findAll(pageable)
+                .map(taskMapper::toResponse);
     }
 }
