@@ -1,5 +1,6 @@
 package com.example.demo.dashboard;
 
+import com.example.demo.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +13,11 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping
-    public DashboardResponse getDashboard() {
-        return dashboardService.getDashboard();
+    public ApiResponse<DashboardResponse> getDashboard() {
+        return ApiResponse.<DashboardResponse>builder()
+                .success(true)
+                .data(dashboardService.getDashboard())
+                .build();
     }
 
 }
