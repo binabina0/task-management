@@ -35,7 +35,7 @@ public class TaskController {
     public void updateStatus(@PathVariable UUID taskId, @RequestParam TaskStatus status) {
         taskService.updateStatus(taskId, status);
     }
-    @GetMapping("/all")
+    @GetMapping()
     public ApiResponse<Page<TaskResponse>> getTasks(@RequestParam int page,
                                                     @RequestParam int size) {
         return ApiResponse.<Page<TaskResponse>>builder()

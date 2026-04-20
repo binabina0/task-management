@@ -8,6 +8,7 @@ import com.example.demo.payment.dto.PaymentRequest;
 import com.example.demo.payment.dto.PaymentResponse;
 import com.example.demo.user.UserEntity;
 import com.example.demo.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,9 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final PaymentShareRepository paymentShareRepository;
+    private final PaymentMapper paymentMapper;
 
+    @Transactional
     public PaymentResponse createPayment(PaymentRequest request) {
         membershipService.checkMember(request.getGroupId());
         UserEntity payer = getCurrentUser();
@@ -53,12 +56,7 @@ public class PaymentService {
                     .build();
             paymentShareRepository.save(share);
         }
-        return PaymentResponse.builder()
-                .id(saved.getId())
-                .amount(saved.getAmount())
-                .description(saved.getDescription())
-                .payerName(payer.getName())
-                .build();
+        return paymentMapper.toResponse(saved, payer);
     }
     public List<PaymentShare> getUserDebts() {
         UserEntity user = getCurrentUser();

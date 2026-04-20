@@ -1,5 +1,6 @@
 package com.example.demo.payment;
 
+import com.example.demo.common.response.ApiResponse;
 import com.example.demo.payment.dto.PaymentRequest;
 import com.example.demo.payment.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,17 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public PaymentResponse createPayment(@RequestBody PaymentRequest request) {
-        return paymentService.createPayment(request);
+    public ApiResponse<PaymentResponse> createPayment(@RequestBody PaymentRequest request) {
+        return ApiResponse.<PaymentResponse>builder()
+                .success(true)
+                .data(paymentService.createPayment(request))
+                .build();
     }
     @GetMapping("/my")
-    public List<PaymentShare> myDebts() {
-        return paymentService.getUserDebts();
+    public ApiResponse<List<PaymentShare>> myDebts() {
+        return ApiResponse.<List<PaymentShare>>builder()
+                .success(true)
+                .data(paymentService.getUserDebts())
+                .build();
     }
 }
