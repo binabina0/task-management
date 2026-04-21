@@ -6,10 +6,10 @@ import com.example.demo.membership.Membership;
 import com.example.demo.membership.MembershipRepository;
 import com.example.demo.membership.Role;
 import com.example.demo.user.UserEntity;
-import com.example.demo.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.example.demo.common.SecurityUtil.getCurrentUser;
@@ -17,9 +17,9 @@ import static com.example.demo.common.SecurityUtil.getCurrentUser;
 @Service
 @RequiredArgsConstructor
 public class GroupService {
-    private final UserService userService;
     private final GroupRepository groupRepository;
     private final MembershipRepository membershipRepository;
+    private final GroupMapper groupMapper;
 
     public GroupResponse createGroup(GroupRequest request) {
         UserEntity currentUser = getCurrentUser();
@@ -35,10 +35,22 @@ public class GroupService {
                 .role(Role.ADMIN)
                 .build();
         membershipRepository.save(membership);
-        return GroupResponse.builder()
-                .id(saved.getId())
-                .name(saved.getName())
-                .description(saved.getDescription())
-                .build();
+        return groupMapper.toResponse(saved);
+    }
+
+    public List<GroupResponse> getUserGroups() {
+        UUID userId = getCurrentUser().getId();
+        return membershipRepository.findByUserId(userId)
+                .stream()
+                .map(m -> {
+                    Group g = m.getGroup();
+                    return GroupResponse.builder()
+                            .id(g.getId())
+                            .name(g.getName())
+                            .description(g.getDescription())
+                            .build();
+
+                })
+                .toList();
     }
 }

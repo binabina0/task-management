@@ -1,12 +1,11 @@
 package com.example.demo.membership;
 
+import com.example.demo.common.response.ApiResponse;
+import com.example.demo.membership.dto.MembershipRequest;
+import com.example.demo.membership.dto.MembershipResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("api/memberships")
@@ -15,9 +14,10 @@ public class MembershipController {
     private final MembershipService membershipService;
 
     @PostMapping
-    public Membership addMember(@RequestParam UUID userId,
-                                @RequestParam UUID groupId,
-                                @RequestParam Role role) {
-        return membershipService.addMember(userId, groupId, role);
+    public ApiResponse<MembershipResponse> addMember(@RequestBody MembershipRequest request) {
+        return ApiResponse.<MembershipResponse>builder()
+                .success(true)
+                .data(membershipService.addMember(request))
+                .build();
     }
 }
