@@ -32,8 +32,12 @@ public class TaskController {
                 .build();
     }
     @PatchMapping("/{taskId}/status")
-    public void updateStatus(@PathVariable UUID taskId, @RequestParam TaskStatus status) {
+    public ApiResponse<Void> updateStatus(@PathVariable UUID taskId, @RequestParam TaskStatus status) {
         taskService.updateStatus(taskId, status);
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Task updated")
+                .build();
     }
     @GetMapping()
     public ApiResponse<Page<TaskResponse>> getTasks(@RequestParam int page,

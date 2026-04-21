@@ -57,6 +57,7 @@ public class TaskService {
     @Transactional
     public void updateStatus(UUID taskId, TaskStatus status) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new NotFoundException("Task not found"));
+        membershipService.checkMember(task.getGroup().getId());
         task.setStatus(status);
         taskRepository.save(task);
     }
