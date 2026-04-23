@@ -40,6 +40,17 @@ public class MembershipService {
         membershipRepository.save(membership);
         return membershipMapper.toResponse(membership);
     }
+    public void addMember(UUID groupId, UUID userId, Role role) {
+        checkAdmin(groupId);
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Group group = groupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Group not found"));
+        Membership membership = Membership.builder()
+                .user(user)
+                .group(group)
+                .role(role)
+                .build();
+        membershipRepository.save(membership);
+    }
     public void checkAdmin(UUID groupId) {
         UUID userId = getCurrentUser().getId();
         Membership membership = membershipRepository
@@ -56,7 +67,7 @@ public class MembershipService {
                 .orElseThrow(() -> new NotFoundException("Not a member of this group"));
     }
     @Transactional
-    public void changeRole(UUID targetUser, UUID groupId, Role newRole) {
+    public void changeRole(UUID groupId, UUID targetUser, Role newRole) {
         checkAdmin(groupId);
         Membership membership = membershipRepository
                 .findByUserIdAndGroupId(targetUser,groupId)

@@ -6,6 +6,7 @@ import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.security.JwtService;
 import com.example.demo.user.UserEntity;
 import com.example.demo.user.UserRepository;
+import com.example.demo.user.dto.UserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,23 @@ public class AuthService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadRequestException("Invalid credentials");
         }
+        String token = jwtService.generateToken(user.getId());
+        return AuthResponse.builder()
+                .token(token)
+                .build();
+    }
+
+    public AuthResponse register(UserRequest request) {
+        if(userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new BadRequestException("Email already exists");
+        }
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        UserEntity user = UserEntity.builder()
+                .email(request.getEmail())
+                .password(encodedPassword)
+                .name(request.getName())
+                .build();
+        userRepository.save(user);
         String token = jwtService.generateToken(user.getId());
         return AuthResponse.builder()
                 .token(token)

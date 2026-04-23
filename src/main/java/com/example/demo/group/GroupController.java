@@ -4,6 +4,7 @@ import com.example.demo.common.response.ApiResponse;
 import com.example.demo.group.dto.GroupRequest;
 import com.example.demo.group.dto.GroupResponse;
 import com.example.demo.membership.MembershipService;
+import com.example.demo.membership.Role;
 import com.example.demo.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,26 @@ public class GroupController {
         return ApiResponse.<List<UserResponse>>builder()
                 .success(true)
                 .data(membershipService.getGroupMembers(groupId))
+                .build();
+    }
+    @PostMapping("/{groupId}/members")
+    public ApiResponse<Void> addMember(@PathVariable UUID groupId,
+                                                @RequestParam UUID userId,
+                                                @RequestParam Role role) {
+        membershipService.addMember(groupId, userId, role);
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Member added")
+                .build();
+    }
+    @PatchMapping("{groupId}/members/{userId}/role")
+    public ApiResponse<Void> changeRole(@PathVariable UUID groupId,
+                                        @PathVariable UUID userId,
+                                        @RequestParam Role role) {
+        membershipService.changeRole(groupId, userId, role);
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Role updated")
                 .build();
     }
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -26,6 +27,14 @@ public class PaymentController {
         return ApiResponse.<List<PaymentShare>>builder()
                 .success(true)
                 .data(paymentService.getUserDebts())
+                .build();
+    }
+    @PatchMapping("/share/{id}/pay")
+    public ApiResponse<Void> markPaid(@PathVariable UUID id) {
+        paymentService.marksPaid(id);
+        return ApiResponse.<Void>builder()
+                .success(true)
+                .message("Marked as paid")
                 .build();
     }
 }

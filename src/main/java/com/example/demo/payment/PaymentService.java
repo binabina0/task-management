@@ -1,5 +1,6 @@
 package com.example.demo.payment;
 
+import com.example.demo.common.exception.ForbiddenException;
 import com.example.demo.common.exception.NotFoundException;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
@@ -50,9 +51,7 @@ public class PaymentService {
                     .payment(saved)
                     .user(user)
                     .amount(splitAmount)
-                    .status(user.getId().equals(payer.getId())
-                            ? PaymentStatus.PAID
-                            : PaymentStatus.UNPAID)
+                    .status(PaymentStatus.UNPAID)
                     .build();
             paymentShareRepository.save(share);
         }
@@ -61,5 +60,14 @@ public class PaymentService {
     public List<PaymentShare> getUserDebts() {
         UserEntity user = getCurrentUser();
         return paymentShareRepository.findByUserId(user.getId());
+    }
+    public void marksPaid(UUID shareId) {
+        PaymentShare share = paymentShareRepository.findById(shareId).orElseThrow(() -> new NotFoundException("Payment share not found"));
+        UUID currentUserId = getCurrentUser().getId();
+        if (!share.getUser().getId().equals(currentUserId)) {
+            throw new ForbiddenException("You can only pay your own debt");
+        }
+        share.setStatus(PaymentStatus.PAID);
+        paymentShareRepository.save(share);
     }
 }
